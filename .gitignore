@@ -1,3 +1,7 @@
 model.pth
 data
 bert-qa-model
+.vs
+.vscode
+.venv
+*.sql
