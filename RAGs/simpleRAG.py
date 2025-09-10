@@ -8,7 +8,7 @@ from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_huggingface import HuggingFaceEmbeddings
 
 model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-llm = ChatOllama(model="llama3:8b")
+llm = ChatOllama(model="llama3.1:8b")
 
 # Step 1: Load and chunk your data
 loader = TextLoader("data/sampleText/Alice Adventures in Wonderland.txt", encoding="utf-8")  #Path to File

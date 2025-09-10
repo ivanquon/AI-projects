@@ -5,3 +5,4 @@ bert-qa-model
 .vscode
 .venv
 *.sql
+sandbox.py

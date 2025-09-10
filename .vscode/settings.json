@@ -1,3 +1,26 @@
 {
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "database": "RAG",
+      "username": "postgres",
+      "password": "admin",
+      "name": "RAG"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "Advanced RAG",
+      "database": "advanced_RAG",
+      "username": "postgres",
+      "password": "admin"
+    }
+  ],
+  "prettier.tabWidth": 4
 }
