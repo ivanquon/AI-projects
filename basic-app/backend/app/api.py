@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from utils.RAG import askRAG, addWikipediaSource
+from utils.RAG import RAG, addWikipediaSource
 import psycopg2
 
 class Query(BaseModel):
@@ -11,6 +11,7 @@ class Source(BaseModel):
     source: str
 
 app = FastAPI()
+rag = RAG()
 
 origins = [
     "http://localhost:5173",
@@ -43,7 +44,7 @@ async def get_sources():
         results = cur.fetchall()
         conn.commit()
         conn.close()
-        return results
+        return results if results else ["None"]
     except HTTPException as http_exc:
         raise http_exc
     except Exception as error:
@@ -56,8 +57,7 @@ async def delete_sources():
         conn = psycopg2.connect(dbname="advanced_RAG", user="postgres", password="admin", host="localhost")
         cur = conn.cursor()
         cur.execute("""
-                TRUNCATE TABLE IF EXISTS "langchain_pg_embedding";
-                TRUNCATE TABLE IF EXISTS "langchain_pg_collection";  
+                TRUNCATE TABLE "langchain_pg_embedding" CASCADE;
                 """)
         conn.commit()
         conn.close()
@@ -80,7 +80,27 @@ async def add_source(source: Source):
 @app.post("/rag")
 async def query_rag(query: Query):
     try:
-        return(askRAG(query.query).content)
+        return(rag.ask(query.query).content)
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as error:
+        print(f"Unexpected error: {error}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.get("/rag")
+async def get_history():
+    try:
+        return([{"content": message.content, "type": message.type} for message in rag.get_history()])
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as error:
+        print(f"Unexpected error: {error}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.delete("/rag")
+async def delete_history():
+    try:
+        return(rag.delete_history())
     except HTTPException as http_exc:
         raise http_exc
     except Exception as error:

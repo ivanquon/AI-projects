@@ -4,14 +4,16 @@ import { ArrowForward } from "@mui/icons-material";
 
 interface TextEntryProps {
     askRAG: (query: string) => Promise<void>;
+    disabled: boolean;
 }
 
-export default function TextEntry({ askRAG }: TextEntryProps) {
+export default function TextEntry({ askRAG, disabled }: TextEntryProps) {
     const [textValue, setTextValue] = useState("");
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // Prevent page reload
         console.log("Form submitted with value:", textValue);
+        setTextValue("");
         await askRAG(textValue);
         // You can also call APIs or update state here
     };
@@ -24,6 +26,7 @@ export default function TextEntry({ askRAG }: TextEntryProps) {
                 margin="normal"
                 value={textValue}
                 onChange={(e) => setTextValue(e.target.value)}
+                disabled={disabled}
                 slotProps={{
                     input: {
                         endAdornment: (

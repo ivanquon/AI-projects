@@ -1,5 +1,5 @@
 import { AppBar } from "@mui/material";
 
 export default function Header() {
-  return <AppBar>Chatbot</AppBar>;
+    return <AppBar>A Basic RAG Chatbot</AppBar>;
 }
