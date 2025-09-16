@@ -1,21 +1,25 @@
 import React, { useState } from "react";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
-import { ArrowForward } from "@mui/icons-material";
+import { ArrowForward, Delete } from "@mui/icons-material";
 
 interface TextEntryProps {
     askRAG: (query: string) => Promise<void>;
+    deleteChatHistory: () => Promise<void>;
     disabled: boolean;
 }
 
-export default function TextEntry({ askRAG, disabled }: TextEntryProps) {
+export default function TextEntry({
+    deleteChatHistory,
+    askRAG,
+    disabled,
+}: TextEntryProps) {
     const [textValue, setTextValue] = useState("");
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault(); // Prevent page reload
+        event.preventDefault();
         console.log("Form submitted with value:", textValue);
         setTextValue("");
         await askRAG(textValue);
-        // You can also call APIs or update state here
     };
 
     return (
@@ -31,8 +35,18 @@ export default function TextEntry({ askRAG, disabled }: TextEntryProps) {
                     input: {
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton type="submit">
+                                <IconButton type="submit" disabled={disabled}>
                                     <ArrowForward />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <IconButton
+                                    disabled={disabled}
+                                    onClick={deleteChatHistory}
+                                >
+                                    <Delete />
                                 </IconButton>
                             </InputAdornment>
                         ),

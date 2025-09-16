@@ -1,12 +1,4 @@
-import {
-    Box,
-    Button,
-    Grid,
-    List,
-    ListItem,
-    ListItemText,
-    Typography,
-} from "@mui/material";
+import { Box, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
 import { useState } from "react";
 import AddSourceDialog from "./AddSourceDialog";
 

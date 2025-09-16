@@ -7,7 +7,7 @@ interface Message {
     type: "human" | "ai";
 }
 
-export default function Header() {
+export default function ChatBox() {
     const scrollRef = useRef<HTMLDivElement>(null);
     const [history, setHistory] = useState<Message[]>([]);
     const [waiting, setWaiting] = useState<boolean>(false);
@@ -41,6 +41,18 @@ export default function Header() {
         setWaiting(false);
     };
 
+    const deleteChatHistory = async () => {
+        await fetch("http://localhost:8000/rag", {
+            method: "DELETE",
+        });
+        const res = await fetch("http://localhost:8000/rag", {
+            method: "GET",
+        });
+        const data = await res.json();
+        console.log(data);
+        setHistory(data);
+    };
+
     return (
         <Box>
             <List
@@ -65,17 +77,15 @@ export default function Header() {
                                 sx={{
                                     backgroundColor:
                                         message.type === "human"
-                                            ? "#a2a7eeff"
-                                            : "#E5E5EA",
+                                            ? "lightblue"
+                                            : "lightgreen",
                                     color: "black",
-                                    px: 2,
-                                    py: 1,
+                                    p: 2,
                                     borderRadius: 2,
                                     maxWidth: "70%",
                                     whiteSpace: "pre-wrap",
                                     wordBreak: "break-word",
                                     textAlign: "left",
-                                    boxShadow: 1,
                                 }}
                             >
                                 <ListItemText>{message.content}</ListItemText>
@@ -85,7 +95,11 @@ export default function Header() {
                 })}
                 <div ref={scrollRef} />
             </List>
-            <TextEntry disabled={waiting} askRAG={askRAG} />
+            <TextEntry
+                deleteChatHistory={deleteChatHistory}
+                disabled={waiting}
+                askRAG={askRAG}
+            />
         </Box>
     );
 }
