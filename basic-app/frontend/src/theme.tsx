@@ -41,5 +41,13 @@ export const theme = createTheme({
                 },
             },
         },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    padding: 5,
+                    background: "blue",
+                },
+            },
+        },
     },
 });

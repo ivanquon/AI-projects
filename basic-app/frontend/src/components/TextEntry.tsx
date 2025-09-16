@@ -31,6 +31,7 @@ export default function TextEntry({
                 value={textValue}
                 onChange={(e) => setTextValue(e.target.value)}
                 disabled={disabled}
+                required
                 slotProps={{
                     input: {
                         endAdornment: (
