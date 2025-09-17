@@ -61,7 +61,9 @@ export default function DatabaseButtons() {
                                         py: 0,
                                     }}
                                 >
-                                    <ListItemText>{item}</ListItemText>
+                                    <ListItemText>
+                                        {index + 1}. {item}
+                                    </ListItemText>
                                 </ListItem>
                             );
                         })}

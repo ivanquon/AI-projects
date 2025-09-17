@@ -142,7 +142,7 @@ class RAG:
         self.memory.delete_thread(self.thread_id)
 
 def addWikipediaSource(page: str):
-    loader = WikipediaLoader(query=page, load_max_docs=1)
+    loader = WikipediaLoader(query=page, load_max_docs=100)
     documents=loader.load()
     text_splitter=RecursiveCharacterTextSplitter()
     embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")

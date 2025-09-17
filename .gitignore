@@ -6,3 +6,4 @@ bert-qa-model
 .venv
 *.sql
 sandbox.py
+.env
