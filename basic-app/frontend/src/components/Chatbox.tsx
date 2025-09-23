@@ -12,6 +12,12 @@ export default function ChatBox() {
     const [history, setHistory] = useState<Message[]>([]);
     const [waiting, setWaiting] = useState<boolean>(false);
 
+    //Clear history on page load/reload so that previous sessions do not persist
+    //If persistent history was wanted I would store it in localstorage for this project since it is small.
+    useEffect(() => {
+        deleteChatHistory();
+    }, []);
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -67,18 +73,12 @@ export default function ChatBox() {
                         <ListItem
                             key={index}
                             sx={{
-                                justifyContent:
-                                    message.type === "human"
-                                        ? "flex-end"
-                                        : "flex-start",
+                                justifyContent: message.type === "human" ? "flex-end" : "flex-start",
                             }}
                         >
                             <Box
                                 sx={{
-                                    backgroundColor:
-                                        message.type === "human"
-                                            ? "lightblue"
-                                            : "lightgreen",
+                                    backgroundColor: message.type === "human" ? "lightblue" : "lightgreen",
                                     color: "black",
                                     p: 2,
                                     borderRadius: 2,
@@ -95,11 +95,7 @@ export default function ChatBox() {
                 })}
                 <div ref={scrollRef} />
             </List>
-            <TextEntry
-                deleteChatHistory={deleteChatHistory}
-                disabled={waiting}
-                askRAG={askRAG}
-            />
+            <TextEntry deleteChatHistory={deleteChatHistory} disabled={waiting} askRAG={askRAG} />
         </Box>
     );
 }

@@ -1,9 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from utils.RAG import RAG, addWikipediaSource
+from utils.RAG import RAG, addFileSource, addWikipediaSource
 import psycopg2
-
 class Query(BaseModel):
     query: str
 
@@ -15,7 +14,7 @@ rag = RAG()
 
 origins = [
     "http://localhost:5173",
-    "localhost:5173"
+    "http://127.0.0.1:5173",
 ]
 
 
@@ -24,9 +23,8 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
-
 
 @app.get("/", tags=["root"])
 async def read_root() -> dict:
@@ -44,12 +42,12 @@ async def get_sources():
         results = cur.fetchall()
         conn.commit()
         conn.close()
-        return results if results else ["None"]
+        return results if results else []
     except HTTPException as http_exc:
         raise http_exc
     except Exception as error:
         print(f"Unexpected error: {error}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(error))
 
 @app.delete("/sources")
 async def delete_sources():
@@ -65,17 +63,27 @@ async def delete_sources():
         raise http_exc
     except Exception as error:
         print(f"Unexpected error: {error}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(error))
 
-@app.post("/sources")
+@app.post("/sources/wikipedia")
 async def add_source(source: Source):
     try:
-        res = addWikipediaSource(source.source)
+        addWikipediaSource(source.source)
     except HTTPException as http_exc:
         raise http_exc
     except Exception as error:
         print(f"Unexpected error: {error}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(error))
+    
+@app.post("/sources/file")
+async def add_source(file: UploadFile = File(...)):
+    try:
+        addFileSource(file)
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as error:
+        print(f"Unexpected error: {error}")
+        raise HTTPException(status_code=500, detail=str(error))
 
 @app.post("/rag")
 async def query_rag(query: Query):
@@ -85,7 +93,7 @@ async def query_rag(query: Query):
         raise http_exc
     except Exception as error:
         print(f"Unexpected error: {error}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(error))
 
 @app.get("/rag")
 async def get_history():
@@ -95,7 +103,7 @@ async def get_history():
         raise http_exc
     except Exception as error:
         print(f"Unexpected error: {error}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(error))
 
 @app.delete("/rag")
 async def delete_history():
@@ -105,4 +113,4 @@ async def delete_history():
         raise http_exc
     except Exception as error:
         print(f"Unexpected error: {error}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        raise HTTPException(status_code=500, detail=str(error))

@@ -19,7 +19,7 @@ export default function DatabaseButtons() {
     };
 
     const addSource = async (source: string) => {
-        await fetch("http://localhost:8000/sources", {
+        await fetch("http://localhost:8000/sources/wikipedia", {
             method: "POST",
             headers: {
                 Accept: "application/json",

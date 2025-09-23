@@ -1,5 +1,7 @@
-from fastapi import HTTPException
-from langchain_ollama import ChatOllama
+#https://github.com/Unstructured-IO/unstructured/issues/3438
+import tempfile
+import os
+from fastapi import HTTPException, UploadFile
 from langchain_postgres import PGVector
 from langchain_community.document_loaders import WikipediaLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -11,8 +13,8 @@ from langgraph.prebuilt import ToolNode
 from langgraph.graph import END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
+from langchain_unstructured import UnstructuredLoader
 from dotenv import load_dotenv
-
 load_dotenv()
 
 import getpass
@@ -24,6 +26,8 @@ if not os.environ.get("GOOGLE_API_KEY"):
 from langchain.chat_models import init_chat_model
 
 llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
+text_splitter=RecursiveCharacterTextSplitter()
+embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 class RAG:
     """
@@ -41,7 +45,7 @@ class RAG:
         self,
         thread_id: str = "abc123",
         pg_connection: str = "postgresql://postgres:admin@127.0.0.1:5432/advanced_RAG",
-        collection_name: str = "Wikipedia",
+        collection_name: str = "langchain",
         llm: str = "llama3.1:8b",
         embedding: str = "all-MiniLM-L6-v2",
     ):
@@ -155,10 +159,8 @@ class RAG:
         self.memory.delete_thread(self.thread_id)
 
 def addWikipediaSource(page: str):
-    loader = WikipediaLoader(query=page, load_max_docs=100)
+    loader = WikipediaLoader(query=page, load_max_docs=1)
     documents=loader.load()
-    text_splitter=RecursiveCharacterTextSplitter()
-    embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     
     for doc in documents:
         print("Loaded", doc.metadata["title"])
@@ -171,8 +173,42 @@ def addWikipediaSource(page: str):
     PGVector.from_documents(
         documents=docs,
         embedding=embedding,
-        collection_name="Wikipedia",
         embedding_length=384,
         create_extension=True,
         connection="postgresql://postgres:admin@127.0.0.1:5432/advanced_RAG",
     )
+
+def addFileSource(file: UploadFile):
+    tmp_dir = tempfile.gettempdir()
+    tmp_path = os.path.join(tmp_dir, f"{file.filename}")
+    with open(tmp_path, "wb") as f:
+        contents = file.file.read()
+        f.write(contents)
+
+    print(f"Saved uploaded file to: {tmp_path}")
+
+    try:
+        loader = UnstructuredLoader(tmp_path)
+        documents = loader.load()
+        for doc in documents:
+            print("Loaded", doc.metadata)
+        
+        if not documents:
+            raise HTTPException(status_code=404, detail="Source not found")
+        
+        docs = text_splitter.split_documents(documents)
+        PGVector.from_documents(
+            documents=docs,
+            embedding=embedding,
+            embedding_length=384,
+            create_extension=True,
+            connection="postgresql://postgres:admin@127.0.0.1:5432/advanced_RAG",
+        )
+    except Exception as e:
+        print(f"Failed to load document: {e}")
+        return
+    finally:
+            os.remove(tmp_path)
+            print(f"Removed temporary file: {tmp_path}")
+    print("File source added successfully")
+    return
