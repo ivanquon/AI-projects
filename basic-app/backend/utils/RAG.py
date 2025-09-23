@@ -11,6 +11,19 @@ from langgraph.prebuilt import ToolNode
 from langgraph.graph import END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import getpass
+import os
+
+if not os.environ.get("GOOGLE_API_KEY"):
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter API key for Google Gemini: ")
+
+from langchain.chat_models import init_chat_model
+
+llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
 
 class RAG:
     """
@@ -38,7 +51,7 @@ class RAG:
         self.memory = MemorySaver()
         
         #Basic Langchain RAG requirements
-        self.llm = ChatOllama(model=llm)
+        self.llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
         self.embedding = HuggingFaceEmbeddings(model_name=embedding)
         self.vector_store = PGVector.from_existing_index(
             embedding=self.embedding,
