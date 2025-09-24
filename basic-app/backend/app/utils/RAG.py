@@ -14,6 +14,7 @@ from langgraph.graph import END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_unstructured import UnstructuredLoader
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -28,6 +29,14 @@ from langchain.chat_models import init_chat_model
 llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
 text_splitter=RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=30)
 embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+
+pg_connection = "postgresql://{user}:{password}@{host}:{port}/{db}".format(
+    user=os.getenv("POSTGRES_USER"),
+    password=os.getenv("POSTGRES_PASSWORD"),
+    host=os.getenv("POSTGRES_HOST"),
+    port=os.getenv("POSTGRES_PORT"),
+    db=os.getenv("POSTGRES_DB"),
+)
 
 class RAG:
     """
@@ -45,9 +54,8 @@ class RAG:
     def __init__(
         self,
         thread_id: str = "abc123",
-        pg_connection: str = "postgresql://postgres:admin@127.0.0.1:5432/advanced_RAG",
+        pg_connection: str = pg_connection,
         collection_name: str = "langchain",
-        llm: str = "llama3.1:8b",
         embedding: str = "all-MiniLM-L6-v2",
     ):
         #Stateful memory management related
@@ -176,7 +184,7 @@ def addWikipediaSource(page: str):
         embedding=embedding,
         embedding_length=384,
         create_extension=True,
-        connection="postgresql://postgres:admin@127.0.0.1:5432/advanced_RAG",
+        connection=pg_connection,
     )
 
 def addFileSource(file: UploadFile):
@@ -203,7 +211,7 @@ def addFileSource(file: UploadFile):
             embedding=embedding,
             embedding_length=384,
             create_extension=True,
-            connection="postgresql://postgres:admin@127.0.0.1:5432/advanced_RAG",
+            connection=pg_connection,
         )
     except Exception as e:
         print(f"Failed to load document: {e}")

@@ -1,14 +1,11 @@
 import uvicorn
-import getpass
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-os.environ["LANGSMITH_TRACING"] = "true"
-
-if not os.environ.get("LANGSMITH_API_KEY"):
-    os.environ["LANGSMITH_API_KEY"] = getpass.getpass()
+if os.environ.get("LANGSMITH_API_KEY"): #Trace only if we have an API key
+    os.environ["LANGSMITH_TRACING"] = "true"
 
 if __name__ == "__main__":
     try:

@@ -1,13 +1,26 @@
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from utils.RAG import RAG, addFileSource, addWikipediaSource
+from .utils.RAG import RAG, addFileSource, addWikipediaSource
+from dotenv import load_dotenv
 import psycopg2
+import os
 class Query(BaseModel):
     query: str
 
 class Source(BaseModel):
     source: str
+
+load_dotenv()
+
+user=os.getenv("POSTGRES_USER")
+password=os.getenv("POSTGRES_PASSWORD")
+host=os.getenv("POSTGRES_HOST")
+port=os.getenv("POSTGRES_PORT")
+db=os.getenv("POSTGRES_DB")
+
+connection_string = "dbname=%s user=%s password=%s host=%s port=%s" % (db,user,password,host,port)
+
 
 app = FastAPI()
 rag = RAG()
@@ -33,7 +46,7 @@ async def read_root() -> dict:
 @app.get("/sources")
 async def get_sources():
     try:
-        conn = psycopg2.connect(dbname="advanced_RAG", user="postgres", password="admin", host="localhost")
+        conn = psycopg2.connect(connection_string)
         cur = conn.cursor()
         cur.execute("""
                 SELECT DISTINCT cmetadata -> 'source' as article_source
@@ -52,7 +65,7 @@ async def get_sources():
 @app.delete("/sources")
 async def delete_sources():
     try:
-        conn = psycopg2.connect(dbname="advanced_RAG", user="postgres", password="admin", host="localhost")
+        conn = psycopg2.connect(connection_string)
         cur = conn.cursor()
         cur.execute("""
                 TRUNCATE TABLE "langchain_pg_embedding" CASCADE;
