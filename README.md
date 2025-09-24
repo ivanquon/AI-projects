@@ -44,7 +44,7 @@ Running the RAG application locally,
      npm run dev
      ```
 4. Usage
-   - Add some sources (Wikipedia article titles or .txt or .pdf file uploads) *Have not yet tested .docx and .doc support 
+   - Add some sources (Wikipedia article titles or .txt file uploads, .pdf partially works but it is WIP for better preprocessing) *Have not yet tested .docx and .doc support 
    - Query the RAG system
    - Clear the history (either by reloading or clicking the trash icon in the chat entry box)
    - Clear all sources added
