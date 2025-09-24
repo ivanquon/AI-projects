@@ -26,12 +26,13 @@ if not os.environ.get("GOOGLE_API_KEY"):
 from langchain.chat_models import init_chat_model
 
 llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
-text_splitter=RecursiveCharacterTextSplitter()
+text_splitter=RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=30)
 embedding = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
 class RAG:
     """
     Referenced: https://python.langchain.com/docs/tutorials/qa_chat_history/#stateful-management-of-chat-history
+
     LangChain based RAG system that answers user queries using retrieved context from a PostgreSQL database
     Implementation Notes:
         - Stores memory/history based on threads, can make more instances with unique histories by passing in different thread ids
@@ -71,7 +72,7 @@ class RAG:
         @tool(response_format="content_and_artifact")
         def retrieve(query: str):
             """Retrieve information related to a query from PostgresSQL database"""
-            retrieved_docs = self.vector_store.similarity_search(query, k=2)
+            retrieved_docs = self.vector_store.similarity_search(query, k=5)
             serialized = "\n\n".join(
                 (f"Source: {doc.metadata['source']}\nContent: {doc.page_content}")
                 for doc in retrieved_docs

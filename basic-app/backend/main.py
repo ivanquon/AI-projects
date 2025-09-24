@@ -12,6 +12,6 @@ if not os.environ.get("LANGSMITH_API_KEY"):
 
 if __name__ == "__main__":
     try:
-        uvicorn.run("app.api:app", host="localhost", port=8000, reload=False, workers=1)
+        uvicorn.run("app.api:app", host="localhost", port=8000, reload=True, workers=1)
     except Exception as e:
         print(f"Failed to start server: {e}")
