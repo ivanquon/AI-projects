@@ -13,6 +13,9 @@ class Source(BaseModel):
 
 load_dotenv()
 
+if os.environ.get("LANGSMITH_API_KEY"): #Trace only if we have an API key
+    os.environ["LANGSMITH_TRACING"] = "true"
+
 user=os.getenv("POSTGRES_USER")
 password=os.getenv("POSTGRES_PASSWORD")
 host=os.getenv("POSTGRES_HOST")
@@ -26,8 +29,8 @@ app = FastAPI()
 rag = RAG()
 
 origins = [
-    "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:5173",
 ]
 
 
