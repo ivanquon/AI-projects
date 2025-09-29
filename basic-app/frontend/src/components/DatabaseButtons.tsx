@@ -1,35 +1,37 @@
-import { Box, Button, Grid, List, ListItem, ListItemText } from "@mui/material";
-import { useState } from "react";
-import AddSourceDialog from "./AddSourceDialog";
+import { Box, Button, Grid, List, ListItem, ListItemText } from "@mui/material"
+import { useState } from "react"
+import AddSourceDialog from "./AddSourceDialog"
+
+const BACKEND_URL = import.meta.env.BACKEND_URL || "https://localhost:8000"
 
 export default function DatabaseButtons() {
-    const [sources, setSources] = useState<string[]>([]);
+    const [sources, setSources] = useState<string[]>([])
 
     const fetchSources = async () => {
-        const res = await fetch("http://localhost:8000/sources");
-        const sources = await res.json();
-        setSources(sources);
-        console.log(sources);
-    };
+        const res = await fetch(`${BACKEND_URL}/sources`)
+        const sources = await res.json()
+        setSources(sources)
+        console.log(sources)
+    }
 
     const deleteSources = async () => {
-        await fetch("http://localhost:8000/sources", {
+        await fetch(`${BACKEND_URL}/sources`, {
             method: "DELETE",
-        });
-    };
+        })
+    }
 
     const addSource = async (source: string) => {
-        await fetch("http://localhost:8000/sources/wikipedia", {
+        await fetch(`${BACKEND_URL}/sources/wikipedia`, {
             method: "POST",
             headers: {
-                Accept: "application/json",
+                "Accept": "application/json",
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 source: source,
             }),
-        });
-    };
+        })
+    }
 
     return (
         <Grid container spacing={2}>
@@ -65,11 +67,11 @@ export default function DatabaseButtons() {
                                         {index + 1}. {item}
                                     </ListItemText>
                                 </ListItem>
-                            );
+                            )
                         })}
                     </List>
                 </Box>
             </Grid>
         </Grid>
-    );
+    )
 }

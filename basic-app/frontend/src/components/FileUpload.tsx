@@ -1,55 +1,57 @@
-import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { Box, Typography, Paper, CircularProgress, Snackbar, Alert } from "@mui/material";
-import type { AlertColor } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useCallback, useState } from "react"
+import { useDropzone } from "react-dropzone"
+import { Box, Typography, Paper, CircularProgress, Snackbar, Alert } from "@mui/material"
+import type { AlertColor } from "@mui/material"
+import CloudUploadIcon from "@mui/icons-material/CloudUpload"
+
+const BACKEND_URL = import.meta.env.BACKEND_URL || "https://localhost:8000"
 
 interface SnackbarState {
-    open: boolean;
-    message: string;
-    severity: AlertColor;
+    open: boolean
+    message: string
+    severity: AlertColor
 }
 
 export default function FileUpload() {
-    const [uploading, setUploading] = useState(false);
+    const [uploading, setUploading] = useState(false)
     const [snackbar, setSnackbar] = useState<SnackbarState>({
         open: false,
         message: "",
         severity: "success",
-    });
+    })
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        if (acceptedFiles.length === 0) return;
+        if (acceptedFiles.length === 0) return
 
-        const file = acceptedFiles[0];
-        const formData = new FormData();
-        formData.append("file", file);
+        const file = acceptedFiles[0]
+        const formData = new FormData()
+        formData.append("file", file)
 
-        setUploading(true);
+        setUploading(true)
 
         try {
-            const response = await fetch("http://localhost:8000/sources/file", {
+            const response = await fetch(`${BACKEND_URL}/sources/file`, {
                 method: "POST",
                 body: formData,
-            });
+            })
 
-            if (!response.ok) throw new Error("Upload failed");
+            if (!response.ok) throw new Error("Upload failed")
 
             setSnackbar({
                 open: true,
                 message: "File uploaded successfully!",
                 severity: "success",
-            });
+            })
         } catch (error: any) {
             setSnackbar({
                 open: true,
                 message: error.message || "Something went wrong",
                 severity: "error",
-            });
+            })
         } finally {
-            setUploading(false);
+            setUploading(false)
         }
-    }, []);
+    }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -60,7 +62,7 @@ export default function FileUpload() {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
         },
         multiple: false,
-    });
+    })
 
     return (
         <Box sx={{ mt: 4, width: "100%", maxWidth: 500, mx: "auto" }}>
@@ -106,5 +108,5 @@ export default function FileUpload() {
                 </Alert>
             </Snackbar>
         </Box>
-    );
+    )
 }
