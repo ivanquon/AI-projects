@@ -2,7 +2,7 @@ import { Box, Button, Grid, List, ListItem, ListItemText } from "@mui/material"
 import { useState } from "react"
 import AddSourceDialog from "./AddSourceDialog"
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || "https://localhost:8000"
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 export default function DatabaseButtons() {
     const [sources, setSources] = useState<string[]>([])

@@ -7,7 +7,7 @@ interface Message {
     type: "human" | "ai"
 }
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || "https://localhost:8000"
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 export default function ChatBox() {
     const scrollRef = useRef<HTMLDivElement>(null)
