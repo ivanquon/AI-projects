@@ -4,7 +4,7 @@ import { Box, Typography, Paper, CircularProgress, Snackbar, Alert } from "@mui/
 import type { AlertColor } from "@mui/material"
 import CloudUploadIcon from "@mui/icons-material/CloudUpload"
 
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 interface SnackbarState {
     open: boolean

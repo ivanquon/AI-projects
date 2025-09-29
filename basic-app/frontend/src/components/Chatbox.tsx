@@ -7,7 +7,7 @@ interface Message {
     type: "human" | "ai"
 }
 
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 export default function ChatBox() {
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -50,6 +50,7 @@ export default function ChatBox() {
     }
 
     const deleteChatHistory = async () => {
+        console.log("BACKEND HERE", BACKEND_URL)
         await fetch(`${BACKEND_URL}/rag`, {
             method: "DELETE",
         })
