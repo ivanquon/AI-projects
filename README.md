@@ -1,3 +1,5 @@
+NOTE: Currently commiting things to work with deployment, last working commit is https://github.com/ivanquon/AI-projects/commit/3c19436953d4ab5a87cc5466769e37c5fe82efbb, will fix read.me later after working deployment
+
 Running the RAG application locally,
 
 1. Postgres Database
