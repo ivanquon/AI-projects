@@ -1,13 +1,3 @@
-model.pth
-data
-bert-qa-model
-.vs
-.vscode
-.venv
-*.sql
-sandbox.py
-.env
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -224,4 +214,3 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
-*/__pycache__/
