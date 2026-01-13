@@ -6,7 +6,7 @@ import sys
 from fastapi import HTTPException, UploadFile
 from langchain_ollama import ChatOllama
 from langchain_postgres import PGVector
-from langchain_community.document_loaders import WikipediaLoader
+from langchain_community.document_loaders import WikipediaLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langgraph.graph import MessagesState, StateGraph
@@ -96,8 +96,7 @@ class RAG:
 
     def _query_or_respond(self, state: MessagesState):
         """Generate tool call for retrieval or respond."""
-        llm_with_tools = self.llm.bind_tools([self.retrieve_tool])
-        response = llm_with_tools.invoke(state["messages"])
+        response = (self.llm.bind_tools([self.retrieve_tool]).invoke(state["messages"]))
         return {"messages": [response]}
 
     def _generate(self, state: MessagesState):
@@ -202,14 +201,16 @@ def addFileSource(file: UploadFile):
     print(f"Saved uploaded file to: {tmp_path}")
 
     try:
-        loader = UnstructuredLoader(tmp_path)
+        if file.content_type == "application/pdf":
+            loader = PyPDFLoader(tmp_path)
+        else:
+            loader = UnstructuredLoader(tmp_path)
         documents = loader.load()
         for doc in documents:
             print("Loaded", doc.metadata)
         
         if not documents:
-            raise HTTPException(status_code=404, detail="Source not found")
-        
+            raise HTTPException(status_code=404, detail="Source not found")   
         docs = text_splitter.split_documents(documents)
         PGVector.from_documents(
             documents=docs,
